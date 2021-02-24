@@ -1,16 +1,19 @@
 package com.example.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     // create tag for the activity to use in log
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    public static final int MAIN_REQUEST_CODE = 1;
 
     public int counter = 0;
 
@@ -38,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("value 2", 200);
 
             // change the activity
-            startActivity(intent);
+//            startActivity(intent);
+
+            startActivityForResult(intent, MAIN_REQUEST_CODE);
         });
     }
 
@@ -55,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        logMethodCall("onDestroy()");
+    protected void onPause() {
+        super.onPause();
+        logMethodCall("onPause()");
     }
 
     @Override
@@ -67,14 +72,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        logMethodCall("onPause()");
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        logMethodCall("onActivityResult()");
+        if (requestCode == MAIN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                int randomData = data.getIntExtra("RANDOM_DATA", 0);
+                Log.d(TAG, "RANDOM_DATA from Activity2 " + randomData);
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d(TAG, "Result canceled");
+            }
+        }
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
         logMethodCall("onRestart()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        logMethodCall("onDestroy()");
     }
 }
